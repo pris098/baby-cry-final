@@ -1,0 +1,1828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#fffaf4">
+<title>Oh Baby! — Gender Reveal Challenge</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+               "Segoe UI", sans-serif;
+  background: #fffaf4;
+  color: #302b31;
+}
+
+body {
+  min-height: 100svh;
+  display: flex;
+  justify-content: center;
+}
+
+button {
+  font: inherit;
+  border: 0;
+  cursor: pointer;
+}
+
+.app {
+  width: 100%;
+  max-width: 560px;
+  min-height: 100svh;
+  padding:
+    max(22px, env(safe-area-inset-top))
+    20px
+    max(26px, env(safe-area-inset-bottom));
+  position: relative;
+  overflow: hidden;
+}
+
+.blob {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: .55;
+}
+
+.b1 {
+  width: 240px;
+  height: 240px;
+  background: #ffe8d5;
+  top: -100px;
+  left: -100px;
+}
+
+.b2 {
+  width: 280px;
+  height: 280px;
+  background: #dff0ed;
+  right: -130px;
+  bottom: -110px;
+}
+
+.screen {
+  display: none;
+  position: relative;
+  z-index: 2;
+  min-height: calc(100svh - 48px);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.screen.active {
+  display: flex;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  font-size: 11px;
+  font-weight: 900;
+  color: #9a8580;
+  margin-bottom: 8px;
+}
+
+h1 {
+  font-size: clamp(42px, 12vw, 64px);
+  line-height: .92;
+  letter-spacing: -3px;
+  margin: 0 0 14px;
+  font-weight: 950;
+}
+
+p {
+  color: #746d72;
+  line-height: 1.5;
+  max-width: 430px;
+}
+
+.baby {
+  width: 190px;
+  height: 190px;
+  border-radius: 50%;
+  margin: 18px 0 24px;
+
+  background:
+    radial-gradient(circle at 30% 25%, #ffffff 0 4%, transparent 5%),
+    linear-gradient(145deg, #fffdf7, #f6e5d2);
+
+  box-shadow:
+    0 24px 50px #78644a1f,
+    inset 0 -12px 24px #d6ad7d22;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 106px;
+  position: relative;
+}
+
+.crying {
+  animation: cry .35s infinite alternate;
+}
+
+@keyframes cry {
+  from {
+    transform: rotate(-2deg) translateX(-2px);
+  }
+
+  to {
+    transform: rotate(2deg) translateX(2px);
+  }
+}
+
+.happy {
+  animation: happy .8s infinite alternate;
+}
+
+@keyframes happy {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(-8px);
+  }
+}
+
+.tear {
+  position: absolute;
+  font-size: 28px;
+  left: 48px;
+  top: 82px;
+}
+
+.primary {
+  width: 100%;
+  max-width: 400px;
+  padding: 18px 24px;
+
+  border-radius: 999px;
+
+  color: #fff;
+
+  background:
+    linear-gradient(135deg, #78a9a1, #5d8f87);
+
+  font-size: 18px;
+  font-weight: 900;
+
+  box-shadow:
+    0 12px 30px #5d8f8740;
+
+  transition: transform .15s ease;
+}
+
+.primary:active {
+  transform: scale(.97);
+}
+
+.warning {
+  margin-top: 17px;
+  max-width: 410px;
+  padding: 12px 15px;
+
+  border-radius: 16px;
+
+  background: #fff5dd;
+  border: 1px solid #efdca7;
+
+  color: #725d2a;
+  font-size: 13px;
+}
+
+.secret {
+  margin-top: 20px;
+  color: #aaa;
+  font-size: 11px;
+}
+
+
+/* GAME */
+
+.challenge {
+  justify-content: flex-start;
+  padding-top: 12px;
+}
+
+.topbar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-weight: 950;
+}
+
+.reset {
+  background: none;
+  color: #999;
+  font-weight: 700;
+  padding: 9px;
+}
+
+.challenge .baby {
+  width: 130px;
+  height: 130px;
+  font-size: 74px;
+  margin: 13px 0 9px;
+}
+
+.challenge .tear {
+  font-size: 19px;
+  left: 33px;
+  top: 57px;
+}
+
+.cryText {
+  font-size: 25px;
+  font-weight: 950;
+  margin-bottom: 18px;
+}
+
+.cards {
+  width: 100%;
+  display: grid;
+  gap: 14px;
+}
+
+.card {
+  background: #ffffffdb;
+  border: 1px solid #fff;
+  border-radius: 22px;
+  padding: 17px;
+
+  text-align: left;
+
+  box-shadow:
+    0 10px 30px #594d550f;
+
+  backdrop-filter: blur(10px);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.cardTitle {
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.cardTime {
+  font-weight: 900;
+  color: #628e87;
+  font-variant-numeric: tabular-nums;
+}
+
+.track {
+  height: 12px;
+  border-radius: 20px;
+  background: #eee9e7;
+  overflow: hidden;
+}
+
+.progress {
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  transition: width .15s linear;
+}
+
+.motion {
+  background: linear-gradient(90deg, #91a8df, #6886cf);
+}
+
+.voice {
+  background: linear-gradient(90deg, #e6a1b7, #cf7597);
+}
+
+.status {
+  font-size: 12px;
+  color: #888;
+  margin-top: 9px;
+}
+
+.status strong {
+  color: #555;
+}
+
+.mic {
+  width: 100%;
+  margin-top: 14px;
+
+  padding: 13px;
+
+  border-radius: 14px;
+
+  background: #f8ecef;
+  color: #b35f7d;
+
+  font-weight: 900;
+}
+
+.mic.active {
+  background: #b35f7d;
+  color: white;
+
+  animation: pulse 1.4s infinite;
+}
+
+@keyframes pulse {
+  50% {
+    box-shadow: 0 0 0 7px #b35f7d1f;
+  }
+}
+
+.hint {
+  font-size: 13px;
+  color: #898084;
+  margin: 13px 0;
+}
+
+.finish {
+  opacity: .42;
+  pointer-events: none;
+}
+
+.finish.ready {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+
+/* REVEAL */
+
+.revealBaby {
+  width: 220px;
+  height: 220px;
+  font-size: 120px;
+
+  animation:
+    pop .8s cubic-bezier(.17,.89,.32,1.28);
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(.2);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.answer {
+  font-size: clamp(44px, 13vw, 72px);
+  font-weight: 950;
+  line-height: .9;
+  letter-spacing: -3px;
+  margin: 12px 0;
+}
+
+.girl {
+  color: #df7895;
+}
+
+.boy {
+  color: #6795ce;
+}
+
+.count {
+  min-height: 26px;
+  color: #8b8287;
+}
+
+.confetti {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 20;
+}
+
+.piece {
+  position: absolute;
+  width: 9px;
+  height: 15px;
+  top: -30px;
+  animation: fall linear forwards;
+}
+
+@keyframes fall {
+  to {
+    transform:
+      translate3d(var(--x), 110vh, 0)
+      rotate(720deg);
+  }
+}
+</style>
+</head>
+
+
+<body>
+
+<div class="blob b1"></div>
+<div class="blob b2"></div>
+
+<main class="app">
+
+<!-- =========================
+     INTRO SCREEN
+========================= -->
+
+<section id="intro" class="screen active">
+
+  <div class="eyebrow">
+    A Gender Reveal Party Game
+  </div>
+
+  <h1>
+    OH BABY! 👶
+  </h1>
+
+  <p>
+    The baby is crying… and only you can calm them down.
+  </p>
+
+  <div class="baby crying">
+    👶
+    <span class="tear">💧</span>
+  </div>
+
+  <p>
+    Gently bounce the phone for
+    <strong>1 minute</strong>
+    and hum or sing for at least
+    <strong>30 seconds</strong>.
+  </p>
+
+  <button class="primary" id="start">
+    👶 START — BABY IS CRYING
+  </button>
+
+  <div class="warning">
+    📱 Gently bounce the phone.
+    Do not shake it violently.
+    Hold it securely.
+  </div>
+
+  <div class="secret">
+    A surprise is waiting at the end…
+  </div>
+
+</section>
+
+
+<!-- =========================
+     GAME SCREEN
+========================= -->
+
+<section id="game" class="screen challenge">
+
+  <div class="topbar">
+
+    <div class="logo">
+      OH BABY! 👶
+    </div>
+
+    <button class="reset" id="reset">
+      Restart
+    </button>
+
+  </div>
+
+
+  <div class="baby crying" id="gameBaby">
+
+    👶
+
+    <span class="tear" id="tear">
+      💧
+    </span>
+
+  </div>
+
+
+  <div class="cryText" id="cry">
+    WAAAAAH! 😭
+  </div>
+
+
+  <div class="cards">
+
+    <!-- PHONE CHALLENGE -->
+
+    <div class="card">
+
+      <div class="cardHeader">
+
+        <div class="cardTitle">
+          📱 Bounce the phone
+        </div>
+
+        <div class="cardTime" id="mt">
+          0:00 / 1:00
+        </div>
+
+      </div>
+
+
+      <div class="track">
+
+        <div
+          class="progress motion"
+          id="mp">
+        </div>
+
+      </div>
+
+
+      <div class="status" id="ms">
+
+        <strong>
+          Waiting...
+        </strong>
+
+        Gently bounce or move the phone.
+
+      </div>
+
+    </div>
+
+
+    <!-- SINGING CHALLENGE -->
+
+    <div class="card">
+
+      <div class="cardHeader">
+
+        <div class="cardTitle">
+          🎤 Hum or sing
+        </div>
+
+        <div class="cardTime" id="vt">
+          0:00 / 0:30
+        </div>
+
+      </div>
+
+
+      <div class="track">
+
+        <div
+          class="progress voice"
+          id="vp">
+        </div>
+
+      </div>
+
+
+      <button class="mic" id="mic">
+        🎤 TAP TO START SINGING
+      </button>
+
+
+      <div class="status" id="vs">
+
+        <strong>
+          Waiting...
+        </strong>
+
+        Your voice will calm the baby.
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="hint" id="hint">
+
+    Complete both challenges
+    to reveal the surprise! 🎁
+
+  </div>
+
+
+  <button
+    class="primary finish"
+    id="finish">
+
+    🎉 REVEAL THE SURPRISE
+
+  </button>
+
+</section>
+
+
+<!-- =========================
+     REVEAL SCREEN
+========================= -->
+
+<section id="reveal" class="screen">
+
+  <div class="eyebrow">
+    The baby is happy!
+  </div>
+
+
+  <div class="baby revealBaby">
+    👶
+  </div>
+
+
+  <div class="count" id="count">
+    Get ready…
+  </div>
+
+
+  <div class="answer" id="answer">
+    IT'S A...
+  </div>
+
+
+  <p id="sub">
+    Congratulations! 💕
+  </p>
+
+
+  <button class="primary" id="again">
+    🔄 PLAY AGAIN
+  </button>
+
+</section>
+
+</main>
+
+
+<div class="confetti" id="confetti"></div>
+
+
+<script>
+
+/*
+===========================================================
+                SECRET GENDER REVEAL
+===========================================================
+
+CHANGE ONLY THIS LINE.
+
+For a GIRL:
+const BABY_GENDER = "GIRL";
+
+For a BOY:
+const BABY_GENDER = "BOY";
+
+===========================================================
+*/
+
+const BABY_GENDER = "BOY";
+
+
+/*
+===========================================================
+                 GAME SETTINGS
+===========================================================
+*/
+
+const MOTION_REQUIRED = 60;
+const VOICE_REQUIRED = 30;
+
+
+/*
+===========================================================
+                 VARIABLES
+===========================================================
+*/
+
+let running = false;
+
+let motion = 0;
+let voice = 0;
+
+let score = 0;
+
+let lastMove = 0;
+let lastVoice = 0;
+
+let audio = null;
+let oscillators = [];
+
+let stream = null;
+let analyser = null;
+let data = null;
+let animationFrame = null;
+
+
+/*
+===========================================================
+                 SHORTCUT
+===========================================================
+*/
+
+const $ = id =>
+  document.getElementById(id);
+
+
+/*
+===========================================================
+                 SCREEN SWITCHING
+===========================================================
+*/
+
+function showScreen(id) {
+
+  document
+    .querySelectorAll(".screen")
+    .forEach(screen =>
+      screen.classList.remove("active")
+    );
+
+  $(id).classList.add("active");
+}
+
+
+/*
+===========================================================
+                 TIME FORMAT
+===========================================================
+*/
+
+function formatTime(seconds) {
+
+  seconds = Math.floor(seconds);
+
+  const minutes =
+    Math.floor(seconds / 60);
+
+  const remaining =
+    seconds % 60;
+
+  return (
+    minutes +
+    ":" +
+    String(remaining).padStart(2, "0")
+  );
+}
+
+
+/*
+===========================================================
+                 BABY CRY SOUND
+===========================================================
+*/
+
+function startCrySound() {
+
+  try {
+
+    audio =
+      new (
+        window.AudioContext ||
+        window.webkitAudioContext
+      )();
+
+
+    const gain =
+      audio.createGain();
+
+    gain.gain.value = 0.045;
+
+    gain.connect(
+      audio.destination
+    );
+
+
+    const osc1 =
+      audio.createOscillator();
+
+    const osc2 =
+      audio.createOscillator();
+
+
+    osc1.type = "sine";
+    osc2.type = "triangle";
+
+
+    osc1.connect(gain);
+    osc2.connect(gain);
+
+
+    osc1.start();
+    osc2.start();
+
+
+    oscillators = [
+      osc1,
+      osc2
+    ];
+
+
+    function cryLoop() {
+
+      if (!running)
+        return;
+
+
+      const now =
+        audio.currentTime;
+
+
+      osc1.frequency.setValueAtTime(
+        480,
+        now
+      );
+
+      osc1.frequency.linearRampToValueAtTime(
+        740,
+        now + .42
+      );
+
+      osc1.frequency.linearRampToValueAtTime(
+        500,
+        now + .85
+      );
+
+
+      osc2.frequency.setValueAtTime(
+        700,
+        now
+      );
+
+      osc2.frequency.linearRampToValueAtTime(
+        1000,
+        now + .42
+      );
+
+      osc2.frequency.linearRampToValueAtTime(
+        680,
+        now + .85
+      );
+
+
+      gain.gain.setValueAtTime(
+        .02,
+        now
+      );
+
+      gain.gain.linearRampToValueAtTime(
+        .065,
+        now + .22
+      );
+
+      gain.gain.linearRampToValueAtTime(
+        .018,
+        now + .85
+      );
+
+
+      setTimeout(
+        cryLoop,
+        850
+      );
+    }
+
+
+    cryLoop();
+
+  } catch (error) {
+
+    console.log(
+      "Audio unavailable",
+      error
+    );
+
+  }
+}
+
+
+function stopCrySound() {
+
+  try {
+
+    oscillators.forEach(
+      oscillator => {
+        try {
+          oscillator.stop();
+        } catch (e) {}
+      }
+    );
+
+    oscillators = [];
+
+
+    if (audio) {
+      audio.close();
+    }
+
+  } catch (e) {}
+
+  audio = null;
+}
+
+
+/*
+===========================================================
+                 MOTION PERMISSION
+===========================================================
+*/
+
+async function requestMotionPermission() {
+
+  if (
+    typeof DeviceMotionEvent !== "undefined" &&
+    typeof DeviceMotionEvent.requestPermission === "function"
+  ) {
+
+    try {
+
+      const permission =
+        await DeviceMotionEvent.requestPermission();
+
+
+      if (permission !== "granted") {
+
+        $("ms").innerHTML =
+          "<strong>Motion permission needed.</strong> " +
+          "Restart and allow motion access.";
+
+        return;
+      }
+
+    } catch (error) {
+
+      $("ms").innerHTML =
+        "<strong>Motion unavailable.</strong>";
+
+      return;
+    }
+  }
+
+
+  window.addEventListener(
+    "devicemotion",
+    handleMotion,
+    true
+  );
+
+
+  $("ms").innerHTML =
+    "<strong>Ready!</strong> " +
+    "Gently bounce the phone.";
+}
+
+
+/*
+===========================================================
+                 MOTION DETECTION
+===========================================================
+*/
+
+function handleMotion(event) {
+
+  if (
+    !running ||
+    motion >= MOTION_REQUIRED
+  ) {
+    return;
+  }
+
+
+  const acceleration =
+    event.accelerationIncludingGravity;
+
+
+  if (!acceleration)
+    return;
+
+
+  const x =
+    acceleration.x || 0;
+
+  const y =
+    acceleration.y || 0;
+
+  const z =
+    acceleration.z || 0;
+
+
+  const magnitude =
+    Math.sqrt(
+      x * x +
+      y * y +
+      z * z
+    );
+
+
+  const movement =
+    Math.abs(
+      magnitude - 9.8
+    );
+
+
+  if (movement > 0.75) {
+
+    score += movement;
+
+  } else {
+
+    score *= .96;
+  }
+
+
+  const now =
+    performance.now();
+
+
+  if (score > 1.8) {
+
+    if (!lastMove) {
+      lastMove = now;
+    }
+
+
+    const elapsed =
+      (now - lastMove) / 1000;
+
+
+    if (elapsed >= .35) {
+
+      motion +=
+        Math.min(elapsed, 1);
+
+
+      motion =
+        Math.min(
+          motion,
+          MOTION_REQUIRED
+        );
+
+
+      lastMove = now;
+
+      score = 0;
+
+      updateGame();
+
+    }
+
+  } else {
+
+    lastMove = 0;
+  }
+}
+
+
+/*
+===========================================================
+                 MICROPHONE
+===========================================================
+*/
+
+async function startMicrophone() {
+
+  if (stream)
+    return;
+
+
+  try {
+
+    stream =
+      await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        }
+      });
+
+
+    if (!audio) {
+
+      audio =
+        new (
+          window.AudioContext ||
+          window.webkitAudioContext
+        )();
+
+    }
+
+
+    const source =
+      audio.createMediaStreamSource(
+        stream
+      );
+
+
+    analyser =
+      audio.createAnalyser();
+
+
+    analyser.fftSize = 512;
+
+    analyser.smoothingTimeConstant = .75;
+
+
+    source.connect(
+      analyser
+    );
+
+
+    data =
+      new Uint8Array(
+        analyser.fftSize
+      );
+
+
+    $("mic").classList.add(
+      "active"
+    );
+
+
+    $("mic").textContent =
+      "🎤 LISTENING — HUM OR SING!";
+
+
+    $("vs").innerHTML =
+      "<strong>Listening!</strong> " +
+      "Hum, sing, or make a gentle sound.";
+
+
+    detectVoice();
+
+  } catch (error) {
+
+    console.log(
+      "Microphone error:",
+      error
+    );
+
+
+    $("vs").innerHTML =
+      "<strong>Microphone permission needed.</strong> " +
+      "Please allow microphone access.";
+  }
+}
+
+
+/*
+===========================================================
+                 VOICE DETECTION
+===========================================================
+*/
+
+function detectVoice() {
+
+  if (
+    !analyser ||
+    !running
+  ) {
+    return;
+  }
+
+
+  analyser.getByteTimeDomainData(
+    data
+  );
+
+
+  let sum = 0;
+
+
+  for (
+    let i = 0;
+    i < data.length;
+    i++
+  ) {
+
+    const normalized =
+      (data[i] - 128) / 128;
+
+    sum +=
+      normalized *
+      normalized;
+  }
+
+
+  const rms =
+    Math.sqrt(
+      sum / data.length
+    );
+
+
+  const now =
+    performance.now();
+
+
+  /*
+    Detect sustained sound.
+
+    The game doesn't care what the person
+    sings — humming and singing both work.
+  */
+
+  if (rms > 0.025) {
+
+    if (!lastVoice) {
+      lastVoice = now;
+    }
+
+
+    const elapsed =
+      (now - lastVoice) / 1000;
+
+
+    if (elapsed >= .2) {
+
+      voice +=
+        Math.min(elapsed, .5);
+
+
+      voice =
+        Math.min(
+          voice,
+          VOICE_REQUIRED
+        );
+
+
+      lastVoice = now;
+
+      updateGame();
+    }
+
+  } else {
+
+    lastVoice = 0;
+  }
+
+
+  animationFrame =
+    requestAnimationFrame(
+      detectVoice
+    );
+}
+
+
+/*
+===========================================================
+                 UPDATE GAME
+===========================================================
+*/
+
+function updateGame() {
+
+  $("mp").style.width =
+    (motion / MOTION_REQUIRED * 100) +
+    "%";
+
+
+  $("vp").style.width =
+    (voice / VOICE_REQUIRED * 100) +
+    "%";
+
+
+  $("mt").textContent =
+    formatTime(motion) +
+    " / 1:00";
+
+
+  $("vt").textContent =
+    formatTime(voice) +
+    " / 0:30";
+
+
+  /*
+    Motion status
+  */
+
+  if (
+    motion >= MOTION_REQUIRED
+  ) {
+
+    $("ms").innerHTML =
+      "✅ <strong>Phone challenge complete!</strong>";
+
+  }
+
+
+  /*
+    Voice status
+  */
+
+  if (
+    voice >= VOICE_REQUIRED
+  ) {
+
+    $("vs").innerHTML =
+      "✅ <strong>Singing challenge complete!</strong>";
+
+  }
+
+
+  /*
+    Baby reactions
+  */
+
+  const progress =
+    (
+      motion / MOTION_REQUIRED +
+      voice / VOICE_REQUIRED
+    ) / 2;
+
+
+  if (progress < .25) {
+
+    $("cry").textContent =
+      "WAAAAAH! 😭";
+
+  } else if (progress < .50) {
+
+    $("cry").textContent =
+      "Still crying… 🥺";
+
+  } else if (progress < .75) {
+
+    $("cry").textContent =
+      "Almost happy! 🥹";
+
+  } else if (progress < 1) {
+
+    $("cry").textContent =
+      "You're doing it! 😊";
+
+  } else {
+
+    $("cry").textContent =
+      "HAPPY BABY! 🥰";
+
+
+    $("gameBaby")
+      .classList.remove("crying");
+
+    $("gameBaby")
+      .classList.add("happy");
+
+
+    $("tear").style.display =
+      "none";
+  }
+
+
+  /*
+    Unlock reveal button
+  */
+
+  if (
+    motion >= MOTION_REQUIRED &&
+    voice >= VOICE_REQUIRED
+  ) {
+
+    $("finish")
+      .classList.add("ready");
+
+
+    $("hint").textContent =
+      "🎉 You did it! " +
+      "The baby is happy. " +
+      "The reveal is ready!";
+  }
+}
+
+
+/*
+===========================================================
+                 REVEAL
+===========================================================
+*/
+
+function revealGender() {
+
+  if (
+    motion < MOTION_REQUIRED ||
+    voice < VOICE_REQUIRED
+  ) {
+    return;
+  }
+
+
+  running = false;
+
+  stopCrySound();
+
+
+  if (stream) {
+
+    stream
+      .getTracks()
+      .forEach(track =>
+        track.stop()
+      );
+
+    stream = null;
+  }
+
+
+  if (animationFrame) {
+
+    cancelAnimationFrame(
+      animationFrame
+    );
+  }
+
+
+  showScreen("reveal");
+
+
+  $("answer").textContent =
+    "IT'S A...";
+
+
+  let number = 3;
+
+
+  $("count").textContent =
+    "Get ready… " + number;
+
+
+  const interval =
+    setInterval(() => {
+
+      number--;
+
+
+      if (number > 0) {
+
+        $("count").textContent =
+          "Get ready… " + number;
+
+      } else {
+
+        clearInterval(interval);
+
+
+        const isGirl =
+          BABY_GENDER === "GIRL";
+
+
+        if (isGirl) {
+
+          $("answer").innerHTML =
+            "IT’S A<br>" +
+            "<span class=\"girl\">" +
+            "GIRL! 🎀" +
+            "</span>";
+
+
+          $("sub").textContent =
+            "Congratulations! " +
+            "It’s a beautiful baby girl! 🎀💕";
+
+        } else {
+
+          $("answer").innerHTML =
+            "IT’S A<br>" +
+            "<span class=\"boy\">" +
+            "BOY! 💙" +
+            "</span>";
+
+
+          $("sub").textContent =
+            "Congratulations! " +
+            "It’s a handsome baby boy! 💙🍼";
+        }
+
+
+        $("count").textContent =
+          "THE BIG REVEAL!";
+
+
+        launchConfetti(
+          isGirl
+        );
+      }
+
+    }, 900);
+}
+
+
+/*
+===========================================================
+                 CONFETTI
+===========================================================
+*/
+
+function launchConfetti(isGirl) {
+
+  const colors =
+    isGirl
+
+      ? [
+          "#e77f9d",
+          "#f4b4c7",
+          "#ffe0e8",
+          "#fff"
+        ]
+
+      : [
+          "#6f9ed2",
+          "#a8c9ec",
+          "#dcecff",
+          "#fff"
+        ];
+
+
+  $("confetti").innerHTML =
+    "";
+
+
+  for (
+    let i = 0;
+    i < 150;
+    i++
+  ) {
+
+    const piece =
+      document.createElement("div");
+
+
+    piece.className =
+      "piece";
+
+
+    piece.style.left =
+      Math.random() * 100 +
+      "%";
+
+
+    piece.style.background =
+      colors[
+        Math.floor(
+          Math.random() *
+          colors.length
+        )
+      ];
+
+
+    piece.style.borderRadius =
+      Math.random() > .5
+        ? "50%"
+        : "2px";
+
+
+    piece.style.setProperty(
+      "--x",
+      (Math.random() - .5) *
+      350 +
+      "px"
+    );
+
+
+    piece.style.animationDuration =
+      2.5 +
+      Math.random() * 3 +
+      "s";
+
+
+    piece.style.animationDelay =
+      Math.random() * .8 +
+      "s";
+
+
+    $("confetti")
+      .appendChild(piece);
+  }
+}
+
+
+/*
+===========================================================
+                 START GAME
+===========================================================
+*/
+
+async function startGame() {
+
+  motion = 0;
+  voice = 0;
+  score = 0;
+
+  lastMove = 0;
+  lastVoice = 0;
+
+  running = true;
+
+
+  $("mp").style.width =
+    "0%";
+
+  $("vp").style.width =
+    "0%";
+
+
+  $("mt").textContent =
+    "0:00 / 1:00";
+
+
+  $("vt").textContent =
+    "0:00 / 0:30";
+
+
+  $("finish")
+    .classList.remove("ready");
+
+
+  $("gameBaby")
+    .classList.add("crying");
+
+
+  $("gameBaby")
+    .classList.remove("happy");
+
+
+  $("tear").style.display =
+    "block";
+
+
+  $("cry").textContent =
+    "WAAAAAH! 😭";
+
+
+  showScreen("game");
+
+
+  startCrySound();
+
+
+  await requestMotionPermission();
+}
+
+
+/*
+===========================================================
+                 RESET
+===========================================================
+*/
+
+function resetGame() {
+
+  running = false;
+
+
+  stopCrySound();
+
+
+  if (stream) {
+
+    stream
+      .getTracks()
+      .forEach(track =>
+        track.stop()
+      );
+
+    stream = null;
+  }
+
+
+  if (animationFrame) {
+
+    cancelAnimationFrame(
+      animationFrame
+    );
+  }
+
+
+  motion = 0;
+  voice = 0;
+  score = 0;
+
+  lastMove = 0;
+  lastVoice = 0;
+
+
+  $("mp").style.width =
+    "0%";
+
+  $("vp").style.width =
+    "0%";
+
+
+  $("mt").textContent =
+    "0:00 / 1:00";
+
+  $("vt").textContent =
+    "0:00 / 0:30";
+
+
+  $("mic").classList.remove(
+    "active"
+  );
+
+
+  $("mic").textContent =
+    "🎤 TAP TO START SINGING";
+
+
+  $("ms").innerHTML =
+    "<strong>Waiting...</strong> " +
+    "Gently bounce or move the phone.";
+
+
+  $("vs").innerHTML =
+    "<strong>Waiting...</strong> " +
+    "Your voice will calm the baby.";
+
+
+  $("finish")
+    .classList.remove("ready");
+
+
+  $("gameBaby")
+    .classList.add("crying");
+
+
+  $("gameBaby")
+    .classList.remove("happy");
+
+
+  $("tear").style.display =
+    "block";
+
+
+  $("cry").textContent =
+    "WAAAAAH! 😭";
+
+
+  $("confetti").innerHTML =
+    "";
+
+
+  showScreen("intro");
+}
+
+
+/*
+===========================================================
+                 BUTTONS
+===========================================================
+*/
+
+$("start").addEventListener(
+  "click",
+  startGame
+);
+
+
+$("mic").addEventListener(
+  "click",
+  startMicrophone
+);
+
+
+$("finish").addEventListener(
+  "click",
+  revealGender
+);
+
+
+$("reset").addEventListener(
+  "click",
+  resetGame
+);
+
+
+$("again").addEventListener(
+  "click",
+  () => {
+
+    resetGame();
+
+    startGame();
+
+  }
+);
+
+</script>
+
+</body>
+</html>
